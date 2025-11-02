@@ -23,6 +23,25 @@
 #include <WiFi.h>
 #include "esp_wifi.h"
 
+// Control remoto por Serial: 's' = stop, 'r' = reset
+bool is_running = true;
+void handleSerialCommands() {
+  if (Serial.available()) {
+    char c = Serial.read();
+    if (c == 's' || c == 'S') {
+      is_running = false;
+      Serial.println("⏸️  STOP: desactivando captura...");
+      esp_wifi_set_promiscuous_rx_cb(NULL);
+      esp_wifi_set_promiscuous(false);
+      Serial.println("✅ Captura detenida");
+    } else if (c == 'r' || c == 'R') {
+      Serial.println("🔁 Reiniciando (ESP.restart())...");
+      delay(100);
+      ESP.restart();
+    }
+  }
+}
+
 int paquetes_capturados = 0;  // Contador global
 
 // ==========================================
@@ -166,10 +185,15 @@ void setup() {
 }
 
 void loop() {
+  handleSerialCommands();
+  if (!is_running) {
+    delay(500);
+    return;
+  }
+
   // ¡No necesitamos hacer nada aquí!
   // La función mi_callback() se ejecuta AUTOMÁTICAMENTE
   // cada vez que llega un paquete
-  
   delay(100);
 }
 

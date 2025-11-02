@@ -1,247 +1,524 @@
-# 🛡️ ESP32 Pentesting - Herramientas de Seguridad WiFi
+# 📡 ESP32 WiFi Sniffer
 
-> Suite de herramientas educativas para auditorías de seguridad WiFi usando ESP32
+## 🎯 Project Overview
 
-[![Platform](https://img.shields.io/badge/platform-ESP32-blue.svg)](https://www.espressif.com/en/products/socs/esp32)
-[![Arduino](https://img.shields.io/badge/Arduino-Compatible-green.svg)](https://www.arduino.cc/)
-[![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
-[![Language](https://img.shields.io/badge/language-C%2FC%2B%2B-yellow.svg)](https://en.wikipedia.org/wiki/C%2B%2B)
+An **interactive WiFi network sniffer** for ESP32 that captures, analyzes, and displays WiFi beacon frames in real-time. Perfect for learning about:
 
----
-
-## 📖 Descripción
-
-Repositorio educativo que contiene herramientas de pentesting WiFi implementadas en ESP32. Diseñado para aprender seguridad de redes inalámbricas, programación en C/Arduino y conceptos de networking.
-
-**⚠️ ADVERTENCIA**: Uso exclusivamente educativo. Solo en redes propias o con autorización explícita.
+- WiFi protocols (802.11)
+- Packet capture and analysis
+- ESP32 microcontroller programming
+- Network security fundamentals
 
 ---
 
-## 🎯 Proyectos Incluidos
+## ✨ Features
 
-### 📡 WiFi Sniffer Tutorial
-**Tutorial progresivo de 5 niveles** para aprender a crear un sniffer WiFi desde cero.
+### 🔍 Core Functionality
+- **Promiscuous mode** - Capture all WiFi traffic in range
+- **Beacon frame analysis** - Decode and extract network information
+- **MAC-based deduplication** - Show each network only once
+- **Real-time RSSI tracking** - Monitor signal strength changes
+- **Auto-cleanup** - Remove networks after 15-second timeout
+- **Live updating table** - Refresh display every 2 seconds
 
-**Características:**
-- ✅ Captura de beacons WiFi
-- ✅ Detección de redes sin duplicados
-- ✅ Tabla actualizable en tiempo real
-- ✅ Control interactivo por comandos
-- ✅ Eliminación automática de redes antiguas
+### 🎮 Interactive Controls
+- **Channel selection** (1-13) - Scan specific WiFi channels
+- **Start/Stop scanning** - Pause and resume on demand
+- **Reset list** - Clear all detected networks
+- **User-friendly interface** - Simple command system
 
-**[📚 Ver Tutorial Completo →](./tutorial/)**
-
-**Niveles:**
-1. **Hola Mundo WiFi** - Inicialización básica
-2. **Capturar Beacons** - Primer sniffer funcional
-3. **Sin Duplicados** - Lista de redes únicas
-4. **Tabla Actualizable** - Display profesional
-5. **Sniffer Completo** - Sistema interactivo completo
+### 📊 Information Displayed
+- Network SSID (name)
+- MAC address (BSSID)
+- Signal strength (RSSI in dBm)
+- Signal quality bars (████ to ▁)
+- Time since last seen
+- Current WiFi channel
+- Scanning status (🟢/🔴)
 
 ---
 
-## 🚀 Inicio Rápido
+## 🛠️ Hardware Requirements
 
-### Requisitos Previos
+- **ESP32** board (any variant):
+  - ESP32-WROOM-32
+  - ESP32-DevKit
+  - ESP32-DevKitC
+  - ESP32-WROVER
+  - Or any compatible ESP32 module
 
-**Hardware:**
-- ESP32 (cualquier modelo: WROOM-32, DevKit V1, etc.)
-- Cable USB para programación
+- **USB cable** (data capable, not just power)
 
-**Software:**
-- [Arduino IDE](https://www.arduino.cc/en/software) 1.8.x o 2.x
-- Driver USB-Serial (CP210x o CH340)
-- Soporte ESP32 para Arduino
+- **Computer** with USB port
 
-### Instalación Rápida
+---
 
-1. **Instalar Arduino IDE** desde https://www.arduino.cc/en/software
+## 📥 Software Requirements
 
-2. **Agregar soporte ESP32:**
-   - Abrir Arduino IDE
-   - `Archivo` → `Preferencias`
-   - En "URLs de gestor de placas adicionales":
+### Required Software
+- **Arduino IDE** 1.8.x or 2.x
+- **ESP32 Board Support** for Arduino
+
+### Installation Steps
+
+1. **Install Arduino IDE**
+   - Download from: https://www.arduino.cc/en/software
+
+2. **Add ESP32 Board Manager URL**
+   - Open Arduino IDE
+   - Go to `File → Preferences`
+   - Add this URL to "Additional Board Manager URLs":
      ```
      https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
      ```
-   - `Herramientas` → `Placa` → `Gestor de placas`
-   - Buscar "ESP32" e instalar
 
-3. **Seleccionar placa:**
-   - `Herramientas` → `Placa` → `ESP32 Dev Module`
-   - `Herramientas` → `Puerto` → (seleccionar tu puerto COM)
+3. **Install ESP32 Board Support**
+   - Go to `Tools → Board → Board Manager`
+   - Search for "esp32"
+   - Install **"ESP32 by Espressif Systems"**
 
-4. **Abrir tutorial:**
-   - `Archivo` → `Abrir` → `tutorial/01_hola_wifi/01_hola_wifi.ino`
-
----
-
-## 📚 Estructura del Proyecto
-
-```
-ScanNetworks/
-│
-├── README.md                      # Este archivo
-│
-├── tutorial/                      # 📚 Tutorial progresivo (RECOMENDADO)
-│   ├── README.md                  # Guía completa
-│   ├── 01_hola_wifi/              # Nivel 1: Básico
-│   ├── 02_capturar_beacons/       # Nivel 2: Captura
-│   ├── 03_sin_duplicados/         # Nivel 3: Filtrado
-│   ├── 04_tabla_actualizable/     # Nivel 4: Display
-│   └── 05_sniffer_completo/       # Nivel 5: Completo
-│
-├── sniffer_v1/                    # Versión simple inicial
-└── sniffer_v2/                    # Versión avanzada actual
-```
+4. **Select Your Board**
+   - Go to `Tools → Board → ESP32 Arduino`
+   - Select your ESP32 model (e.g., "ESP32 Dev Module")
+   - Go to `Tools → Port`
+   - Select the correct COM/USB port
 
 ---
 
-## 🎓 ¿Por dónde empezar?
+## 🚀 Quick Start
 
-### Para Principiantes
-Si eres nuevo en C/Arduino o microcontroladores:
-👉 **Empieza por el [Tutorial Nivel 1](./tutorial/)**
+### 1. Upload the Code
 
-Aprenderás paso a paso:
-- Conceptos básicos de C
-- Cómo funciona WiFi
-- Programación de ESP32
-- Comparaciones con Python
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/ESP32-Pentesting.git
 
-### Para Usuarios Avanzados
-Si ya conoces C/Arduino:
-👉 **Ve directo al [Nivel 5 - Sniffer Completo](./tutorial/05_sniffer_completo/)**
+# Open the project
+cd ESP32-Pentesting/ScanNetworks
+# Open sniffer_v2/sniffer_v2.ino in Arduino IDE
+```
+
+### 2. Configure Arduino IDE
+
+- **Board:** ESP32 Dev Module (or your specific model)
+- **Upload Speed:** 115200
+- **Flash Frequency:** 80MHz
+- **Flash Mode:** QIO
+- **Flash Size:** 4MB (or your board's size)
+- **Partition Scheme:** Default
+- **Core Debug Level:** None
+
+### 3. Upload and Run
+
+1. Click **Upload** button (→)
+2. Wait for "Done uploading"
+3. Open **Serial Monitor** (`Tools → Serial Monitor`)
+4. Set baud rate to **115200**
+5. Follow on-screen instructions
 
 ---
 
-## 🔧 Características del WiFi Sniffer
+## 📖 Usage Guide
 
-| Característica | Descripción |
-|---|---|
-| **Captura de Beacons** | Detecta todas las redes WiFi cercanas |
-| **Sin Duplicados** | Muestra cada red solo una vez (por MAC) |
-| **Actualización Automática** | Tabla que se refresca cada 2 segundos |
-| **Limpieza Automática** | Elimina redes que no se ven en 15 seg |
-| **Control Interactivo** | Comandos: start, stop, cambiar canal |
-| **Todos los Canales** | Soporta canales 1-13 (2.4 GHz) |
-
-### Comandos Disponibles
+### Starting the Sniffer
 
 ```
-6        → Escanear canal 6
-s/stop   → Detener escaneo
-r/reset  → Reiniciar
-1-13     → Cambiar a otro canal
+╔════════════════════════════════════════════════════════════╗
+║          📡 ESP32 WiFi SNIFFER - INTERACTIVE              ║
+╚════════════════════════════════════════════════════════════╝
+
+➤ Enter channel (1-13): 6
 ```
 
-### Ejemplo de Salida
+Type a channel number (1-13) and press Enter.
+
+### Interactive Commands
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `1-13` | Select WiFi channel and start scanning | `6` |
+| `S` or `stop` | Stop scanning (keep current list) | `s` |
+| `R` or `reset` | Clear all detected networks | `r` |
+
+### Example Output
 
 ```
 ╔══════════════════════════════════════════════════════════════════════╗
-║  SNIFFER WiFi - Canal 6 | Redes: 5 | Beacons: 142                   ║
-╠══════════════════════════════════════════════════════════════════════╣
-║  #  │ SSID (Red WiFi)          │ MAC Address       │ Señal (dBm)  ║
-╠══════════════════════════════════════════════════════════════════════╣
-║  1  │ MiWiFi_Casa              │ a4:91:b1:2c:3d:4e │  -45 dBm     ║
-║  2  │ Vecino_5G                │ c8:3a:35:11:22:33 │  -67 dBm     ║
-║  3  │ <oculto>                 │ 00:11:22:33:44:55 │  -72 dBm     ║
-╚══════════════════════════════════════════════════════════════════════╝
+║                    📡 WiFi NETWORKS DETECTED                         ║
+╠════╦═══════════════════════╦═══════════════════════╦═════════╦═══════╣
+║ #  ║ SSID                  ║ MAC Address           ║ Signal  ║ Time  ║
+╠════╬═══════════════════════╬═══════════════════════╬═════════╬═══════╣
+║ 1  ║ Home_WiFi_5G          ║ aa:bb:cc:dd:ee:ff     ║ -42 ████ ║  2s   ║
+║ 2  ║ Neighbor_Network      ║ 11:22:33:44:55:66     ║ -68 ██   ║  5s   ║
+║ 3  ║ (Hidden)              ║ 99:88:77:66:55:44     ║ -75 █    ║  8s   ║
+╚════╩═══════════════════════╩═══════════════════════╩═════════╩═══════╝
+
+📊 Total: 3 | 📡 Channel: 6 | 🟢 SCANNING
+💡 Commands: 1-13 (channel) | S (stop) | R (reset)
+```
+
+### Signal Strength Guide
+
+| Bars | RSSI Range | Quality | Typical Distance |
+|------|------------|---------|------------------|
+| ████ | -30 to -50 dBm | Excellent | 0-10 meters |
+| ███  | -50 to -60 dBm | Good | 10-30 meters |
+| ██   | -60 to -70 dBm | Fair | 30-50 meters |
+| █    | -70 to -80 dBm | Weak | 50-100 meters |
+| ▁    | < -80 dBm | Very weak | > 100 meters |
+
+---
+
+## 📚 Learning Tutorial
+
+### New to ESP32 or C/C++?
+
+Check out the **progressive tutorial** in the `tutorial/` or `tutorial_en/` folder:
+
+- **Level 1:** Hello WiFi World (15 min)
+- **Level 2:** Capture Beacons (30 min)
+- **Level 3:** No Duplicates (30 min)
+- **Level 4:** Live Updating Table (45 min)
+- **Level 5:** Complete Interactive Sniffer (1 hour)
+
+Each level builds upon the previous one with extensive comments and Python comparisons for beginners.
+
+📖 **See:** [Tutorial README](tutorial_en/README.md)
+
+---
+
+## 🧪 Troubleshooting
+
+### No Networks Detected
+
+**Possible causes:**
+- No WiFi routers nearby
+- Wrong channel selected
+- Promiscuous mode not activated
+- WiFi antenna not connected (if external)
+
+**Solutions:**
+- Try channels 1, 6, and 11 (most common)
+- Ensure routers are powered on
+- Reset ESP32 and re-upload code
+- Check WiFi antenna connections
+
+### Serial Monitor Shows Garbage
+
+**Cause:** Wrong baud rate
+
+**Solution:**
+- Set Serial Monitor to **115200 baud**
+- Reset ESP32 after changing baud rate
+
+### Upload Failed
+
+**Causes:**
+- Serial Monitor is open
+- Wrong COM port selected
+- BOOT button needed
+
+**Solutions:**
+- Close Serial Monitor before uploading
+- Select correct port in `Tools → Port`
+- Hold BOOT button during upload (some ESP32 models)
+
+### ESP32 Keeps Restarting
+
+**Causes:**
+- Power supply insufficient
+- Code crash/memory issue
+- Hardware fault
+
+**Solutions:**
+- Use quality USB cable and power source
+- Check array bounds (MAX_NETWORKS)
+- Try different ESP32 board
+
+---
+
+## 🔬 Technical Details
+
+### WiFi Channels Scanned
+
+- **2.4 GHz band:** Channels 1-13
+- **Frequency range:** 2412 MHz - 2472 MHz
+- **Note:** Channel 14 (2484 MHz) available in some regions but not used here
+
+### Beacon Frame Structure
+
+```
+[0-1]   Frame Control (type, subtype, flags)
+[2-3]   Duration
+[4-9]   Destination Address (broadcast: ff:ff:ff:ff:ff:ff)
+[10-15] Source Address (router MAC / BSSID)
+[16-21] BSSID
+[22-23] Sequence Control
+[24-35] Timestamp, Beacon Interval, Capability Info
+[36]    Tag Number (0 = SSID)
+[37]    SSID Length
+[38+]   SSID Characters
+```
+
+### Key Functions
+
+#### `capturePacket()`
+- **Purpose:** Callback for WiFi packet capture
+- **Trigger:** Every received frame in promiscuous mode
+- **Processing:** Filters beacons (type 0, subtype 8)
+
+#### `addOrUpdateNetwork()`
+- **Purpose:** Deduplication and tracking
+- **Logic:** Search by MAC → Update if exists, add if new
+- **Timestamp:** Updates `last_seen` for timeout tracking
+
+#### `cleanupOldNetworks()`
+- **Purpose:** Remove stale networks
+- **Timeout:** 15 seconds (NETWORK_TIMEOUT)
+- **Method:** Array shift and counter decrement
+
+#### `displayTable()`
+- **Purpose:** Formatted output to Serial
+- **Refresh:** Every 2 seconds (REFRESH_INTERVAL)
+- **Format:** ASCII table with Unicode box drawing
+
+---
+
+## 🎓 Educational Use
+
+This project is ideal for:
+
+- **University courses** in networking and security
+- **Cybersecurity workshops** and bootcamps
+- **IoT development** training
+- **Self-learning** WiFi protocols
+- **Security awareness** demonstrations
+
+### Learning Outcomes
+
+After completing this project, you will understand:
+
+- ✅ WiFi 802.11 frame structure
+- ✅ Promiscuous mode and packet capture
+- ✅ ESP32 WiFi capabilities
+- ✅ Callback functions in embedded C
+- ✅ Data structures (structs, arrays)
+- ✅ Timestamp-based state tracking
+- ✅ Serial communication and user input
+- ✅ Real-time data processing
+
+---
+
+## 🔐 Security and Ethics
+
+### ⚠️ Legal Notice
+
+**This tool is for educational and authorized testing only.**
+
+**Legal uses:**
+- ✅ Scanning your own networks
+- ✅ Authorized penetration testing
+- ✅ Academic research with permission
+- ✅ Controlled laboratory environments
+
+**Illegal uses:**
+- ❌ Intercepting private communications
+- ❌ Unauthorized network attacks
+- ❌ Data theft or exploitation
+- ❌ Any malicious activities
+
+### 🛡️ What This Sniffer Does
+
+**Captures:** ONLY beacon frames (public broadcast)
+- Network names (SSID)
+- MAC addresses (public identifiers)
+- Signal strength (RSSI)
+- WiFi channels
+
+**Does NOT capture:**
+- ❌ Passwords
+- ❌ Encrypted traffic content
+- ❌ User data
+- ❌ Authentication details
+
+**Think of it as:** A radio scanner that shows station names and frequencies - not recording the actual broadcasts.
+
+### 📜 Responsible Disclosure
+
+If you discover security vulnerabilities in WiFi networks using this tool:
+
+1. **Do NOT exploit** the vulnerability
+2. **Inform** the network owner privately
+3. **Allow time** for fixes before public disclosure
+4. **Follow** responsible disclosure guidelines
+
+---
+
+## 🚀 Advanced Modifications
+
+### Add Channel Hopping
+
+Auto-cycle through all channels:
+
+```cpp
+void loop() {
+  static int channel = 1;
+  static unsigned long last_hop = 0;
+  
+  if (millis() - last_hop > 3000) {  // Every 3 seconds
+    esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE);
+    channel = (channel % 13) + 1;  // Cycle 1-13
+    last_hop = millis();
+  }
+  
+  // ... rest of loop
+}
+```
+
+### Save to SD Card
+
+Add SD card support:
+
+```cpp
+#include <SD.h>
+#include <SPI.h>
+
+void saveToSD() {
+  File file = SD.open("/networks.csv", FILE_WRITE);
+  file.println("SSID,MAC,RSSI,Timestamp");
+  
+  for (int i = 0; i < network_count; i++) {
+    file.printf("%s,%s,%d,%lu\n",
+                networks[i].ssid.c_str(),
+                networks[i].mac.c_str(),
+                networks[i].rssi,
+                networks[i].last_seen);
+  }
+  
+  file.close();
+}
+```
+
+### Web Interface
+
+Serve results via HTTP:
+
+```cpp
+#include <WiFi.h>
+#include <WebServer.h>
+
+WebServer server(80);
+
+void handleRoot() {
+  String html = "<html><body><h1>WiFi Networks</h1><table>";
+  
+  for (int i = 0; i < network_count; i++) {
+    html += "<tr><td>" + networks[i].ssid + "</td>";
+    html += "<td>" + networks[i].mac + "</td>";
+    html += "<td>" + String(networks[i].rssi) + " dBm</td></tr>";
+  }
+  
+  html += "</table></body></html>";
+  server.send(200, "text/html", html);
+}
 ```
 
 ---
 
-## 🛠️ Solución de Problemas
+## 🤝 Contributing
 
-### El ESP32 no se detecta
-- Instalar drivers: https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
-- Probar otro cable USB
-- Presionar botón **BOOT** al subir código
+Contributions are welcome! Here's how:
 
-### No se capturan paquetes
-- Verificar velocidad serial: **115200 baudios**
-- Probar canal 6 u 11
-- Presionar botón **RESET** en el ESP32
+### Ways to Contribute
 
-### Errores de compilación
-- Actualizar ESP32 board manager
-- Verificar que la placa sea "ESP32 Dev Module"
-- Asegurarse de que solo hay un archivo .ino por carpeta
+1. **Bug Reports**
+   - Open an issue with detailed description
+   - Include ESP32 model and Arduino IDE version
+   - Provide Serial Monitor output if applicable
 
----
+2. **Feature Requests**
+   - Describe the feature and use case
+   - Explain why it would be beneficial
 
-## 📊 Comparación: Python vs C/Arduino
+3. **Code Contributions**
+   - Fork the repository
+   - Create a feature branch
+   - Submit a pull request with clear description
 
-| Concepto Python | Equivalente C/Arduino |
-|---|---|
-| `print("Hola")` | `Serial.println("Hola");` |
-| `time.sleep(1)` | `delay(1000);` |
-| `def funcion():` | `void funcion() { }` |
-| `lista = []` | `Array lista[10];` |
-| `if condicion:` | `if (condicion) { }` |
-| `for i in range(10):` | `for (int i=0; i<10; i++)` |
+4. **Documentation**
+   - Improve comments and explanations
+   - Add translations
+   - Create video tutorials
 
----
+### Code Style
 
-## ⚖️ Consideraciones Legales
-
-⚠️ **IMPORTANTE**:
-- Proyecto exclusivamente **educativo**
-- Solo usar en **redes propias** o con autorización
-- Capturar tráfico ajeno puede ser **ilegal**
-- El autor **NO se responsabiliza** por mal uso
+- Use clear variable names
+- Add comments for complex logic
+- Follow existing formatting
+- Test on real hardware before submitting
 
 ---
 
-## 🤝 Contribuir
+## 📝 License
 
-¡Las contribuciones son bienvenidas!
-
-1. Fork el repositorio
-2. Crear rama: `git checkout -b feature/mejora`
-3. Commit: `git commit -m 'Agrega mejora X'`
-4. Push: `git push origin feature/mejora`
-5. Abrir Pull Request
-
----
-
-## 📚 Recursos Adicionales
-
-### Documentación
-- [ESP32 Arduino Core](https://docs.espressif.com/projects/arduino-esp32/en/latest/)
-- [WiFi API Reference](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/network/esp_wifi.html)
-- [Arduino Reference](https://www.arduino.cc/reference/en/)
-
-### Herramientas Relacionadas
-- [Wireshark](https://www.wireshark.org/) - Análisis de tráfico
-- [Aircrack-ng](https://www.aircrack-ng.org/) - Suite WiFi
-- [Kismet](https://www.kismetwireless.net/) - Detector de redes
-
----
-
-## 📜 Licencia
-
-Este proyecto está bajo la **Licencia MIT**.
+This project is licensed under the **MIT License**.
 
 ```
-MIT License - Copyright (c) 2025
-Se permite uso, copia y modificación con las condiciones del MIT.
+MIT License
+
+Copyright (c) 2024
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+[Full license text in LICENSE file]
 ```
 
 ---
 
-## 👨‍💻 Autor
+## 📧 Contact
 
-**D3XT3R-4RCH**  
-Creado con ❤️ para la comunidad de aprendizaje  
-Año: 2025
+- **Issues:** GitHub Issues tab
+- **Discussions:** GitHub Discussions
+- **Pull Requests:** Always welcome!
 
 ---
 
-<div align="center">
+## 🙏 Acknowledgments
 
-**¿Te gustó el proyecto? ¡Dale una ⭐!**
+- **Espressif Systems** - ESP32 platform and documentation
+- **Arduino Community** - ESP32 Arduino core
+- **WiFi Security Researchers** - Educational resources
+- **Open Source Contributors** - Making this possible
 
-[📚 Tutorial](./tutorial/) • [🐛 Issues](../../issues) • [💡 Discussions](../../discussions)
+---
 
-</div>
+## 📚 Further Reading
+
+### ESP32 Resources
+- [ESP32 Official Documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/)
+- [ESP32 Arduino Core](https://github.com/espressif/arduino-esp32)
+- [ESP32 Datasheet](https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf)
+
+### WiFi Protocol Resources
+- [IEEE 802.11 Standard](https://standards.ieee.org/standard/802_11-2020.html)
+- [WiFi Frame Types](https://mrncciew.com/2014/10/08/cwap-802-11-mgmt-frame-types/)
+- [Wireshark WiFi Capture](https://wiki.wireshark.org/CaptureSetup/WLAN)
+
+### Security Learning
+- [OWASP IoT Security](https://owasp.org/www-project-internet-of-things/)
+- [WiFi Security Best Practices](https://www.wi-fi.org/discover-wi-fi/security)
+
+---
+
+**⭐ If you found this project helpful, please star it on GitHub! ⭐**
+
+---
+
+**Made with ❤️ for learning and education**
+
+*Remember: Use your skills to build, protect, and educate - never to harm.*

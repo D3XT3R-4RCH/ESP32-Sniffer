@@ -22,6 +22,24 @@
 #include <WiFi.h>       // ESP32 WiFi library
 #include "esp_wifi.h"   // Advanced WiFi functions
 
+// Remote control via Serial: 's' = stop, 'r' = reset
+bool is_running = true;
+void handleSerialCommands() {
+  if (Serial.available()) {
+    char c = Serial.read();
+    if (c == 's' || c == 'S') {
+      is_running = false;
+      Serial.println("⏸️  STOP: disabling capture...");
+      esp_wifi_set_promiscuous(false);
+      Serial.println("✅ Capture stopped");
+    } else if (c == 'r' || c == 'R') {
+      Serial.println("🔁 Restarting (ESP.restart())...");
+      delay(100);
+      ESP.restart();
+    }
+  }
+}
+
 void setup() {
   // ==========================================
   // 1. INITIALIZE SERIAL (like print in Python)
@@ -103,9 +121,15 @@ void setup() {
 }
 
 void loop() {
+  handleSerialCommands();
+  if (!is_running) {
+    delay(500);
+    return;
+  }
+
   // For now, we do nothing in the loop
   // Just keep WiFi in promiscuous mode
-  
+
   delay(1000);
   Serial.println("⏱️  WiFi listening... (nothing captured yet)");
 }
