@@ -30,6 +30,83 @@ const unsigned long INTERVALO_REFRESCO = 2000;  // Actualizar cada 2 segundos
 const unsigned long TIMEOUT_RED = 15000;  // Eliminar red si no se ve en 15 segundos
 
 // ========================================
+// FUNCIONES AUXILIARES
+// ========================================
+
+// Buscar si una red ya existe en la lista (por MAC)
+// Similar a: def buscar_red(mac) en Python
+int buscarRedPorMAC(String mac) {
+  for (int i = 0; i < total_redes; i++) {
+    if (redes[i].mac == mac) {
+      return i;  // Retorna el índice si la encuentra
+    }
+  }
+  return -1;  // -1 significa "no encontrada" (como None en Python)
+}
+
+// Eliminar redes que llevan mucho tiempo sin verse
+// Similar a: def limpiar_redes_viejas() en Python
+void limpiarRedesViejas() {
+  unsigned long ahora = millis();  // Tiempo actual en milisegundos
+  
+  // Recorrer todas las redes de atrás hacia adelante
+  // (para poder eliminar sin problemas de índices)
+  for (int i = total_redes - 1; i >= 0; i--) {
+    if (ahora - redes[i].ultima_vez > TIMEOUT_RED) {
+      // Esta red lleva más de 15 segundos sin verse, eliminarla
+      
+      // Desplazar todas las redes siguientes una posición atrás
+      // Es como hacer: lista.pop(i) en Python
+      for (int j = i; j < total_redes - 1; j++) {
+        redes[j] = redes[j + 1];
+      }
+      total_redes--;  // Decrementar el contador
+    }
+  }
+}
+
+// Mostrar todas las redes encontradas en formato tabla
+// Similar a: def mostrar_tabla_redes() en Python
+void mostrarTablaRedes() {
+  // Limpiar pantalla (imprimir líneas vacías)
+  Serial.print("\033[2J");    // Código ANSI para limpiar pantalla
+  Serial.print("\033[H");     // Mover cursor al inicio
+  
+  Serial.println("╔════════════════════════════════════════════════════════════════════╗");
+  Serial.printf("║  SNIFFER WiFi - Canal %d | Redes: %d | Beacons: %d", 
+                canal, total_redes, paquetes_capturados);
+  // Rellenar con espacios para alinear
+  int espacios = 68 - 38 - String(canal).length() - String(total_redes).length() - String(paquetes_capturados).length();
+  for (int i = 0; i < espacios; i++) Serial.print(" ");
+  Serial.println("║");
+  Serial.println("╠════════════════════════════════════════════════════════════════════╣");
+  Serial.println("║  #  │ SSID (Red WiFi)          │ MAC Address       │ Señal (dBm) ║");
+  Serial.println("╠════════════════════════════════════════════════════════════════════╣");
+  
+  if (total_redes == 0) {
+    Serial.println("║                      ⏳ Esperando redes...                         ║");
+  } else {
+    for (int i = 0; i < total_redes; i++) {
+      // Truncar SSID si es muy largo
+      String ssid_display = redes[i].ssid;
+      if (ssid_display.length() > 24) {
+        ssid_display = ssid_display.substring(0, 21) + "...";
+      }
+      
+      // Formatear cada línea de la tabla
+      Serial.printf("║ %2d  │ %-24s │ %s │ %4d dBm    ║\n", 
+                    i + 1,
+                    ssid_display.c_str(),
+                    redes[i].mac.c_str(),
+                    redes[i].rssi);
+    }
+  }
+  
+  Serial.println("╚════════════════════════════════════════════════════════════════════╝");
+  Serial.println("💡 Comandos: 's'=detener | 'r'=reiniciar | 1-13=cambiar canal\n");
+}
+
+// ========================================
 // FUNCIÓN CALLBACK (se ejecuta cada vez que se captura un paquete WiFi)
 // Similar a una función que pasas como parámetro en Python
 // ========================================
@@ -81,9 +158,25 @@ void capturar_paquete(void *buf, wifi_promiscuous_pkt_type_t tipo_paquete) {
       ssid = "<oculto>";  // Red sin SSID visible
     }
     
-    // Mostrar en el Serial Monitor (como print() en Python)
-    Serial.printf("📶 Red: %s | MAC: %s | Señal: %d dBm\n", 
-                  ssid.c_str(), mac, rssi);
+    String mac_str = String(mac);
+    
+    // Buscar si esta red ya existe en la lista
+    int indice = buscarRedPorMAC(mac_str);
+    
+    if (indice >= 0) {
+      // La red YA EXISTE, solo actualizar la señal y timestamp
+      redes[indice].rssi = rssi;
+      redes[indice].ultima_vez = millis();
+    } else {
+      // La red es NUEVA, agregarla a la lista
+      if (total_redes < MAX_REDES) {
+        redes[total_redes].mac = mac_str;
+        redes[total_redes].ssid = ssid;
+        redes[total_redes].rssi = rssi;
+        redes[total_redes].ultima_vez = millis();
+        total_redes++;
+      }
+    }
     
     paquetes_capturados++;  // Incrementar contador (como += 1 en Python)
   }
@@ -118,6 +211,18 @@ void setup() {
 // Similar a while True: en Python
 // ========================================
 void loop() {
+  // Si estamos escaneando, actualizar la pantalla cada cierto tiempo
+  if (escaneando) {
+    unsigned long ahora = millis();
+    
+    // ¿Ya pasó el tiempo de refresco?
+    if (ahora - ultimo_refresco >= INTERVALO_REFRESCO) {
+      limpiarRedesViejas();  // Eliminar redes que ya no están en rango
+      mostrarTablaRedes();    // Mostrar tabla actualizada
+      ultimo_refresco = ahora;  // Actualizar timestamp
+    }
+  }
+  
   // Verificar si hay datos disponibles en el Serial Monitor
   // Serial.available() devuelve cuántos bytes hay para leer
   if (Serial.available() > 0) {
@@ -138,8 +243,9 @@ void loop() {
         
         Serial.println("\n⏸️  ESCANEO DETENIDO");
         Serial.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        Serial.printf("📊 Estadísticas:\n");
+        Serial.printf("📊 Estadísticas finales:\n");
         Serial.printf("   • Canal escaneado: %d\n", canal);
+        Serial.printf("   • Redes únicas encontradas: %d\n", total_redes);
         Serial.printf("   • Beacons capturados: %d\n", paquetes_capturados);
         Serial.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         Serial.println("\n💡 Escribe 'r' para reiniciar o un nuevo canal\n");
@@ -164,6 +270,7 @@ void loop() {
       // Resetear variables (como en Python: variable = 0)
       escaneando = false;
       paquetes_capturados = 0;
+      total_redes = 0;  // Limpiar lista de redes
       canal = 0;
       
       Serial.println("✅ Listo para escanear");
@@ -188,6 +295,7 @@ void loop() {
         // Guardar el nuevo canal
         canal = nuevo_canal;
         paquetes_capturados = 0;  // Resetear contador
+        total_redes = 0;  // Limpiar lista de redes
         
         Serial.printf("\n✅ Canal %d seleccionado\n", canal);
         Serial.println("🔧 Configurando ESP32...\n");
@@ -214,10 +322,10 @@ void loop() {
         
         Serial.println("✅ Sniffer activado");
         Serial.printf("📡 Escuchando en canal %d...\n", canal);
-        Serial.println("💡 Escribe 's' para detener");
-        Serial.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        Serial.println("⏳ Capturando redes...\n");
         
         escaneando = true;  // Marcar que estamos escaneando
+        ultimo_refresco = millis();  // Iniciar timer de refresco
       } else {
         Serial.println("❌ Comando inválido");
         Serial.println("💡 Usa: número (1-13), 's' (stop), o 'r' (reset)\n");
