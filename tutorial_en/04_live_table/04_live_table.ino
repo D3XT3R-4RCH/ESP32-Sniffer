@@ -23,6 +23,25 @@
 #include <WiFi.h>
 #include "esp_wifi.h"
 
+// Remote control via Serial: 's' = stop, 'r' = reset
+bool is_running = true;
+void handleSerialCommands() {
+  if (Serial.available()) {
+    char c = Serial.read();
+    if (c == 's' || c == 'S') {
+      is_running = false;
+      Serial.println("⏸️  STOP: disabling capture...");
+      esp_wifi_set_promiscuous_rx_cb(NULL);
+      esp_wifi_set_promiscuous(false);
+      Serial.println("✅ Capture stopped");
+    } else if (c == 'r' || c == 'R') {
+      Serial.println("🔁 Restarting (ESP.restart())...");
+      delay(100);
+      ESP.restart();
+    }
+  }
+}
+
 // ==========================================
 // CONFIGURATION CONSTANTS
 // ==========================================
@@ -249,6 +268,11 @@ void setup() {
 }
 
 void loop() {
+  handleSerialCommands();
+  if (!is_running) {
+    delay(500);
+    return;
+  }
   unsigned long now = millis();
   
   // ==========================================
