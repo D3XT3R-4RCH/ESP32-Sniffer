@@ -232,7 +232,7 @@ Se permite uso, copia y modificación con las condiciones del MIT.
 
 ## 👨‍💻 Autor
 
-**Jose**  
+**D3XT3R-4RCH**  
 Creado con ❤️ para la comunidad de aprendizaje  
 Año: 2025
 

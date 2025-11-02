@@ -275,7 +275,7 @@ Este proyecto está bajo la licencia MIT. Ver archivo `LICENSE` para más detall
 
 Creado con ❤️ para la comunidad de aprendizaje
 
-**Autor**: Jose  
+**Autor**: D3XT3R-4RCH  
 **Año**: 2025  
 **Propósito**: Educación en seguridad de redes WiFi
 
