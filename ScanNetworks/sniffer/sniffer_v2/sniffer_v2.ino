@@ -68,23 +68,26 @@ void limpiarRedesViejas() {
 // Mostrar todas las redes encontradas en formato tabla
 // Similar a: def mostrar_tabla_redes() en Python
 void mostrarTablaRedes() {
-  // Limpiar pantalla (imprimir líneas vacías)
-  Serial.print("\033[2J");    // Código ANSI para limpiar pantalla
-  Serial.print("\033[H");     // Mover cursor al inicio
+  // Imprimir líneas vacías para separar (en lugar de limpiar pantalla)
+  for (int i = 0; i < 3; i++) Serial.println();
   
-  Serial.println("╔════════════════════════════════════════════════════════════════════╗");
+  Serial.println("╔══════════════════════════════════════════════════════════════════════╗");
   Serial.printf("║  SNIFFER WiFi - Canal %d | Redes: %d | Beacons: %d", 
                 canal, total_redes, paquetes_capturados);
-  // Rellenar con espacios para alinear
-  int espacios = 68 - 38 - String(canal).length() - String(total_redes).length() - String(paquetes_capturados).length();
+  
+  // Calcular espacios necesarios para alinear correctamente
+  // Fórmula: 70 (ancho total) - 2 (bordes) - longitud del texto ya impreso
+  int len_texto = 30 + String(canal).length() + String(total_redes).length() + String(paquetes_capturados).length();
+  int espacios = 70 - len_texto;
   for (int i = 0; i < espacios; i++) Serial.print(" ");
   Serial.println("║");
-  Serial.println("╠════════════════════════════════════════════════════════════════════╣");
-  Serial.println("║  #  │ SSID (Red WiFi)          │ MAC Address       │ Señal (dBm) ║");
-  Serial.println("╠════════════════════════════════════════════════════════════════════╣");
+  
+  Serial.println("╠══════════════════════════════════════════════════════════════════════╣");
+  Serial.println("║  #  │ SSID (Red WiFi)          │ MAC Address       │ Señal (dBm)  ║");
+  Serial.println("╠══════════════════════════════════════════════════════════════════════╣");
   
   if (total_redes == 0) {
-    Serial.println("║                      ⏳ Esperando redes...                         ║");
+    Serial.println("║                       ⏳ Esperando redes...                          ║");
   } else {
     for (int i = 0; i < total_redes; i++) {
       // Truncar SSID si es muy largo
@@ -94,7 +97,7 @@ void mostrarTablaRedes() {
       }
       
       // Formatear cada línea de la tabla
-      Serial.printf("║ %2d  │ %-24s │ %s │ %4d dBm    ║\n", 
+      Serial.printf("║ %2d  │ %-24s │ %s │ %4d dBm     ║\n", 
                     i + 1,
                     ssid_display.c_str(),
                     redes[i].mac.c_str(),
@@ -102,8 +105,9 @@ void mostrarTablaRedes() {
     }
   }
   
-  Serial.println("╚════════════════════════════════════════════════════════════════════╝");
-  Serial.println("💡 Comandos: 's'=detener | 'r'=reiniciar | 1-13=cambiar canal\n");
+  Serial.println("╚══════════════════════════════════════════════════════════════════════╝");
+  Serial.println("💡 Comandos: 's'=detener | 'r'=reiniciar | 1-13=cambiar canal");
+  Serial.println();
 }
 
 // ========================================
