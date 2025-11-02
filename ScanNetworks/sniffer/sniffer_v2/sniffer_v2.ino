@@ -5,11 +5,29 @@
 #include "esp_wifi.h"   // Para funciones avanzadas de WiFi (modo promiscuo)
 
 // ========================================
+// ESTRUCTURA DE DATOS (como una clase en Python)
+// ========================================
+struct RedWiFi {
+  String mac;           // Dirección MAC (identificador único)
+  String ssid;          // Nombre de la red
+  int rssi;             // Señal en dBm
+  unsigned long ultima_vez;  // Timestamp de la última vez que se vio (millis)
+};
+
+// ========================================
 // VARIABLES GLOBALES
 // ========================================
+#define MAX_REDES 50    // Máximo de redes a almacenar (como MAX_REDES en Python)
+RedWiFi redes[MAX_REDES];  // Array de redes (como una lista en Python)
+int total_redes = 0;    // Contador de redes únicas encontradas
+
 int canal = 0;           // Canal WiFi a escanear (1-13)
 bool escaneando = false; // ¿Estamos escaneando? (como un bool en Python)
 int paquetes_capturados = 0;  // Contador de paquetes (para estadísticas)
+
+unsigned long ultimo_refresco = 0;  // Para controlar cuándo actualizar la pantalla
+const unsigned long INTERVALO_REFRESCO = 2000;  // Actualizar cada 2 segundos
+const unsigned long TIMEOUT_RED = 15000;  // Eliminar red si no se ve en 15 segundos
 
 // ========================================
 // FUNCIÓN CALLBACK (se ejecuta cada vez que se captura un paquete WiFi)
